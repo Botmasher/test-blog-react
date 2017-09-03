@@ -4,13 +4,14 @@ import PropTypes from 'prop-types'
 
 class DisplayPost extends Component {
 	static PropTypes = {
-		postText: PropTypes.string.isRequired
+		subject: PropTypes.string,
+		course: PropTypes.string.isRequired
 	}
 
 	render() {
 		return (
-			<div className="display-post">
-				{ this.props.postText }
+			<div className='display-post'>
+				{ this.props.subject }, specifically { this.props.course }
 				<div><Link to='/'>Return Home</Link></div>
 			</div>
 		)
