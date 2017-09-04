@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
-import { Route, Link } from 'react-router-dom'
+import { Route, Link, Switch } from 'react-router-dom'
 import DisplayPost from './DisplayPost.js'
+import MathGeometry from './MathGeometry.js'
+import Maths from './Maths'
 
 class App extends Component {
 	
@@ -13,10 +15,6 @@ class App extends Component {
 		//CustomAPI.getAll().then((contacts) => {
 		//	this.setState({contacts})
 		//})
-	}
-
-	onHomeButton = ({history}) => {
-		history.push('/')
 	}
 
 	changePage = (subject, course) => {
@@ -39,30 +37,33 @@ class App extends Component {
 
 		let { subject, course } = this.state
 
+		const subjectCaps = subject.charAt(0)+subject.slice(1)
+		const courseCaps = course.charAt(0)+course.slice(1)
+		//const LessonComponent = React.components[`${subjectCaps}${courseCaps}`]
+
 		return (
 			<div>
 
 				<Route exact path='/' render={() => (
-		    		<div>
-		    			<h1>Some courses for you</h1>
-		    			<h2>Math</h2>
-		    			<ul>
+					<div>
+						<h1>Some courses for you</h1>
+						<h2>Mathematics</h2>
+						<ul>
 							<li>{this.displayLink('math','geometry')}</li>
 							<li>{this.displayLink('math','algebra')}</li>
-		    			</ul>
-		    			<h2>Humanities</h2>
-		    			<ul>
-		    				<li>{this.displayLink('language','british-literature')}</li>
-		    				<li>{this.displayLink('philosophy','logic')}</li>
-		    			</ul>
-		    		</div>
-		     	)}/>
+						</ul>
+						<h2>Humanities</h2>
+						<ul>
+							<li>{this.displayLink('language','british-literature')}</li>
+							<li>{this.displayLink('philosophy','logic')}</li>
+						</ul>
+					</div>
+			 	)}/>
 
-				{subject !== '' && course !== '' && (
-		     		<Route path={`/${subject}/${course}`} render={() => (
-		    			<DisplayPost subject={subject} course={course} />
-		    		)}/>
-		    	)}		    					
+				<Switch>
+					<Route path='/math/geometry' component={MathGeometry} />
+					<Route path='/math' component={Maths} />
+				</Switch>
 
 	    	</div>
 		)
