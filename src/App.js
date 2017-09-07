@@ -7,8 +7,38 @@ import Maths from './Maths'
 class App extends Component {
 	
 	state = {
-		subject: '',
-		course: ''
+		currentSubject: '',
+		currentCourse: '',
+		courses: [
+			{
+				title: 'Geometry',
+				subject: 'Math',
+			},
+			{
+				title: 'Algebra I',
+				subject: 'Math'
+			},
+			{
+				title: 'Algebra II',
+				subject: 'Math'
+			},
+			{
+				title: 'British Literature',
+				subject: 'Language'
+			},
+			{
+				title: 'Logic',
+				subject: 'Philosophy'
+			},
+			{
+				title: 'Ethics',
+				subject: 'Philosophy'
+			},
+			{
+				title: 'Epistemology',
+				subject: 'Philosophy'
+			}
+		]
 	}
 
 	componentDidMount() {
@@ -18,54 +48,65 @@ class App extends Component {
 	}
 
 	changePage = (subject, course) => {
-		this.setState({subject,course})
+		this.setState({currentSubect: subject, currentCourse: course})
 	}
 
 	displayLink = (subject, course) => {
 		return (
-			<Link onClick={()=>this.changePage(subject,course)} to={`${subject}/${course}/`}>{`${this.prettyCourseName(course)}`}</Link>
+			<Link onClick={()=>this.changePage(subject,course)} to={`${subject}/${course}/`}>{`${course}`}</Link>
 		)
 	}
 
-	prettyCourseName = (courseName) => {
-		return (`${courseName.split('-').map((w) => (
-			`${w.charAt(0).toUpperCase()}${w.slice(1)}`
-		)).join(' ')}`)
+	linkifyName = (name) => {
+		return (`${name.split(' ').map(w => w.toLowerCase()).join('-')}`)
 	}
 
 	render() {
 
-		let { subject, course } = this.state
-
-		const subjectCaps = subject.charAt(0)+subject.slice(1)
-		const courseCaps = course.charAt(0)+course.slice(1)
+		let { currentSubject, currentCourse, courses } = this.state
 		//const LessonComponent = React.components[`${subjectCaps}${courseCaps}`]
 
-		return (
-			<div>
+		// TODO break out lessons by subject in the state above
+			// - make the state easier to navigate and iterate thru keys
+			// - goal: easy to get classes by subject AND subjects by classes
+			// - goal: no multiple iteration and mapping
+		let coursePaths = [];
+		courses.map((course) => {
+			coursePaths.push(`/${this.linkifyName(course.subject)}/${this.linkifyName(course.title)}/`)
+		});
+		const allSubjects = courses.reduce((accumulatedSubjects, course) => {
+			if (accumulatedSubjects.indexOf(course.subject) < 0) {
+				accumulatedSubjects.push(course.subject);
+			}
+			return accumulatedSubjects;
+		}, []);
 
+		// TODO dynamically load component content based on route path name
+			// e.g. if the route is /math/geometry/ then use MathGeometry.js component
+		return (
+			<Switch>
+				{coursePaths.map((path,i) => (
+					<Route key={path} path={path} render={()=>{
+						return (
+							<div>We will load specific content for the <em>{`${courses[i].title} `}</em>
+							course in the <em>{`${courses[i].subject}`}</em> department right 
+							here. Until then, <Link to='/'>go home</Link>.</div>
+						)
+					}} />
+				))}
 				<Route exact path='/' render={() => (
 					<div>
-						<h1>Some courses for you</h1>
-						<h2>Mathematics</h2>
+						<h1>All our courses are belong you</h1>
 						<ul>
-							<li>{this.displayLink('math','geometry')}</li>
-							<li>{this.displayLink('math','algebra')}</li>
-						</ul>
-						<h2>Humanities</h2>
-						<ul>
-							<li>{this.displayLink('language','british-literature')}</li>
-							<li>{this.displayLink('philosophy','logic')}</li>
+							{coursePaths.map((path, index) => (
+								<li key={`${index}`}>
+									<Link to={path}>{`${courses[index].title}`}</Link>
+								</li>
+							))}
 						</ul>
 					</div>
 			 	)}/>
-
-				<Switch>
-					<Route path='/math/geometry' component={MathGeometry} />
-					<Route path='/math' component={Maths} />
-				</Switch>
-
-	    	</div>
+			</Switch>
 		)
 	}
 }
