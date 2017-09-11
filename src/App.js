@@ -9,42 +9,24 @@ class App extends Component {
 	state = {
 		currentSubject: '',
 		currentCourse: '',
-		courses: [
+		catalog: [
 			{
-				title: 'Geometry',
 				subject: 'Math',
+				courses: 'Algebra I', 'Geometry', 'Algebra II'
 			},
 			{
-				title: 'Algebra I',
-				subject: 'Math'
+				subject: 'Language',
+				courses: 'British Literature'
 			},
 			{
-				title: 'Algebra II',
-				subject: 'Math'
-			},
-			{
-				title: 'British Literature',
-				subject: 'Language'
-			},
-			{
-				title: 'Logic',
-				subject: 'Philosophy'
-			},
-			{
-				title: 'Ethics',
-				subject: 'Philosophy'
-			},
-			{
-				title: 'Epistemology',
-				subject: 'Philosophy'
+				subject: 'Philosophy',
+				courses: 'Ethics', 'Epistemology'
 			}
 		]
 	}
 
 	componentDidMount() {
-		//CustomAPI.getAll().then((contacts) => {
-		//	this.setState({contacts})
-		//})
+		// ...
 	}
 
 	changePage = (subject, course) => {
@@ -64,7 +46,6 @@ class App extends Component {
 	render() {
 
 		let { currentSubject, currentCourse, courses } = this.state
-		//const LessonComponent = React.components[`${subjectCaps}${courseCaps}`]
 
 		// TODO break out lessons by subject in the state above
 			// - make the state easier to navigate and iterate thru keys
@@ -75,14 +56,12 @@ class App extends Component {
 			coursePaths.push(`/${this.linkifyName(course.subject)}/${this.linkifyName(course.title)}/`)
 		});
 		const allSubjects = courses.reduce((accumulatedSubjects, course) => {
-			if (accumulatedSubjects.indexOf(course.subject) < 0) {
-				accumulatedSubjects.push(course.subject);
-			}
-			return accumulatedSubjects;
-		}, []);
+			return [...accumulatedSubjects, course]
+		}, []).filter((course, index) => { courses.indexOf(course)===index });
 
 		// TODO dynamically load component content based on route path name
 			// e.g. if the route is /math/geometry/ then use MathGeometry.js component
+			// e.g. if the route is /math/gobbledy/ then use Math.js component (route to /math/)
 		return (
 			<Switch>
 				{coursePaths.map((path,i) => (
@@ -97,13 +76,16 @@ class App extends Component {
 				<Route exact path='/' render={() => (
 					<div>
 						<h1>All our courses are belong you</h1>
-						<ul>
-							{coursePaths.map((path, index) => (
-								<li key={`${index}`}>
-									<Link to={path}>{`${courses[index].title}`}</Link>
-								</li>
-							))}
-						</ul>
+						{this.state.catalog.map((entry) => (
+							<h2>{`${entry.subject}`}</h2>
+							<ul>
+								{subj.courses.map((course, index) => (
+									<li key={`${index}`}>
+										<Link to={`/${this.linkifyName(entry.subject)}/${this.linkifyName(course)}`}>{`${course}`}</Link>
+									</li>
+								))}
+							<ul>
+						))}
 					</div>
 			 	)}/>
 			</Switch>
