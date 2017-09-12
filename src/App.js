@@ -12,15 +12,15 @@ class App extends Component {
 		catalog: [
 			{
 				subject: 'Math',
-				courses: 'Algebra I', 'Geometry', 'Algebra II'
+				courses: ['Algebra I', 'Geometry', 'Algebra II']
 			},
 			{
 				subject: 'Language',
-				courses: 'British Literature'
+				courses: ['British Literature']
 			},
 			{
 				subject: 'Philosophy',
-				courses: 'Ethics', 'Epistemology'
+				courses: ['Ethics', 'Epistemology']
 			}
 		]
 	}
@@ -35,7 +35,7 @@ class App extends Component {
 
 	displayLink = (subject, course) => {
 		return (
-			<Link onClick={()=>this.changePage(subject,course)} to={`${subject}/${course}/`}>{`${course}`}</Link>
+			<Link onClick={()=>this.changePage(subject,course)} to={`/${subject}/${course}/`}>{`${course}`}</Link>
 		)
 	}
 
@@ -45,46 +45,47 @@ class App extends Component {
 
 	render() {
 
-		let { currentSubject, currentCourse, courses } = this.state
+		let { currentSubject, currentCourse, catalog } = this.state
 
 		// TODO break out lessons by subject in the state above
 			// - make the state easier to navigate and iterate thru keys
 			// - goal: easy to get classes by subject AND subjects by classes
 			// - goal: no multiple iteration and mapping
-		let coursePaths = [];
-		courses.map((course) => {
-			coursePaths.push(`/${this.linkifyName(course.subject)}/${this.linkifyName(course.title)}/`)
-		});
-		const allSubjects = courses.reduce((accumulatedSubjects, course) => {
-			return [...accumulatedSubjects, course]
-		}, []).filter((course, index) => { courses.indexOf(course)===index });
+		
+		//const allSubjects = courses.reduce((accumulatedSubjects, course) => {
+		//	return [...accumulatedSubjects, course]
+		//}, []).filter((course, index) => { courses.indexOf(course)===index });
 
 		// TODO dynamically load component content based on route path name
 			// e.g. if the route is /math/geometry/ then use MathGeometry.js component
 			// e.g. if the route is /math/gobbledy/ then use Math.js component (route to /math/)
 		return (
 			<Switch>
-				{coursePaths.map((path,i) => (
-					<Route key={path} path={path} render={()=>{
-						return (
-							<div>We will load specific content for the <em>{`${courses[i].title} `}</em>
-							course in the <em>{`${courses[i].subject}`}</em> department right 
-							here. Until then, <Link to='/'>go home</Link>.</div>
-						)
-					}} />
+				{catalog.map(entry => (
+					entry.courses.map((course, i) => (
+						<Route key={i} path={`/${this.linkifyName(entry.subject)}/${this.linkifyName(course)}`} render={()=>{
+							return (
+								<div>We will load specific content for the <em>{`${course} `}</em>
+								course in the <em>{`${entry.subject}`}</em> department right 
+								here. Until then, <Link to='/'>go home</Link>.</div>
+							)
+						}} />
+					))
 				))}
 				<Route exact path='/' render={() => (
 					<div>
 						<h1>All our courses are belong you</h1>
 						{this.state.catalog.map((entry) => (
-							<h2>{`${entry.subject}`}</h2>
-							<ul>
-								{subj.courses.map((course, index) => (
-									<li key={`${index}`}>
-										<Link to={`/${this.linkifyName(entry.subject)}/${this.linkifyName(course)}`}>{`${course}`}</Link>
-									</li>
-								))}
-							<ul>
+							<div key={`${entry.subject}`}>
+								<h2>{`${entry.subject}`}</h2>
+								<ul key={`${entry.subject}`}>
+									{entry.courses.map((course, index) => (
+										<li key={`${course}`}>
+											<Link to={`/${this.linkifyName(entry.subject)}/${this.linkifyName(course)}`}>{`${course}`}</Link>
+										</li>
+									))}
+								</ul>
+							</div>
 						))}
 					</div>
 			 	)}/>
